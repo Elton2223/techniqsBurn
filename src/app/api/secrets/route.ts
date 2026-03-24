@@ -65,9 +65,17 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ id: secret.id }, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error("Failed to create secret", error);
     return NextResponse.json(
-      { error: "Failed to create secret" },
+      {
+        error:
+          process.env.NODE_ENV === "development"
+            ? `Failed to create secret: ${
+                error instanceof Error ? error.message : "Unknown error"
+              }`
+            : "Failed to create secret",
+      },
       { status: 500 }
     );
   }
