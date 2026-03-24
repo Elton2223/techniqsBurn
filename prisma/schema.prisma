@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Secret {
+  id             String    @id @default(uuid()) @db.VarChar(36)
+  encryptedData  String    @db.Text
+  iv             String    @db.Text
+  passphraseHash String?   @db.VarChar(255)
+  maxViews       Int       @default(1)
+  currentViews   Int       @default(0)
+  expiresAt      DateTime?
+  burned         Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+
+  @@index([burned, expiresAt])
+}
+
+model Stats {
+  id        String   @id @default("global") @db.VarChar(36)
+  created   Int      @default(0)
+  viewed    Int      @default(0)
+  expired   Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
